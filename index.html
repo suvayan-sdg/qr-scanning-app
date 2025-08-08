@@ -57,13 +57,22 @@
 
       let startTime;
       let scanningInProgress = false;
+      let stream = null; // To hold the video stream so we can stop it later
 
       // Start camera function
       async function startCamera() {
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({
+          // Check if there is an active stream, and stop it if necessary
+          if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach((track) => track.stop()); // Stop all the tracks
+          }
+
+          // Request new video stream
+          stream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: "environment" },
           });
+
           videoElement.srcObject = stream;
           videoElement.style.display = "block"; // Show video element
           scanQRCode();
